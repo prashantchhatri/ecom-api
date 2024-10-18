@@ -2,15 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Http\Controllers\AccessTokenController;
-use Laravel\Passport\Http\Controllers\AuthorizationController;
-use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
-use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
-use Laravel\Passport\Http\Controllers\TransientTokenController;
-use Laravel\Passport\Http\Controllers\ClientController;
-use Laravel\Passport\Http\Controllers\PersonalAccessTokenController;
-use Laravel\Passport\Http\Controllers\ScopeController;
-use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
+use Laravel\Passport\Http\Controllers\{ScopeController, AccessTokenController, AuthorizationController, ApproveAuthorizationController, DenyAuthorizationController, TransientTokenController, ClientController, PersonalAccessTokenController, AuthorizedAccessTokenController};
+use App\Http\Controllers\{AuthController, ProductController};
+
+
 
 Route::prefix('oauth')->group(function () {
     Route::post('/token', [AccessTokenController::class, 'issueToken'])->name('passport.token');
@@ -32,3 +27,10 @@ Route::prefix('oauth')->group(function () {
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::get('/products', [ProductController::class, 'index']);
+
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+
