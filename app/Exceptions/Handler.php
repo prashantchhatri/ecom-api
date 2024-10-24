@@ -3,7 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\UnauthorizedHttpException;
 use Throwable;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -25,6 +27,19 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Customize the unauthenticated response
+        $this->renderable(function (AuthenticationException $e, $request) {
+            // Only respond with a JSON response if the request expects it
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unauthenticated, Please login'
+                ], 401);
+            }
+
+            // For non-API requests, you could redirect if you want
+            return null; 
         });
     }
 }

@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\{ScopeController, AccessTokenController, AuthorizationController, ApproveAuthorizationController, DenyAuthorizationController, TransientTokenController, ClientController, PersonalAccessTokenController, AuthorizedAccessTokenController};
-use App\Http\Controllers\{AuthController, ProductController};
+use App\Http\Controllers\{AuthController, ProductController, CompanyController};
 
 
 
@@ -24,14 +24,13 @@ Route::prefix('oauth')->group(function () {
     Route::delete('/tokens/{token_id}', [AuthorizedAccessTokenController::class, 'destroy'])->name('passport.tokens.destroy');
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-
-Route::get('/products', [ProductController::class, 'index']);
 
 Route::post('/register-company', [AuthController::class, 'registerCompany']);
 Route::post('/register-user', [AuthController::class, 'registerUser']);
 Route::post('/login', [AuthController::class, 'login']);
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/companies', [CompanyController::class, 'index']);
+});
 

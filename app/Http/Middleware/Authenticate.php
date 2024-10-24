@@ -9,9 +9,12 @@ class Authenticate extends Middleware
 {
     /**
      * Get the path the user should be redirected to when they are not authenticated.
+     *
+     * Since we are developing a REST API, we don't need to redirect the user. Just throw an exception.
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        // This will let the exception handler handle the unauthenticated case
+        return null;
     }
 }
