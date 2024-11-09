@@ -10,6 +10,39 @@ use Illuminate\Support\Facades\{Auth, Hash, Validator};
 
 class AuthController extends Controller
 {
+        /**
+     * @OA\Post(
+     *     path="/api/register-company",
+     *     tags={"Auth"},
+     *     summary="Register a new company",
+     *     description="Register a new company with company details",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="My Ecommerce"),
+     *             @OA\Property(property="speciality", type="string", example="Electronics"),
+     *             @OA\Property(property="gst_no", type="string", example="22AAAAA0000A1Z5"),
+     *             @OA\Property(property="registration_no", type="string", example="123456789")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Company registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="company", type="object"),
+     *             @OA\Property(property="message", type="string", example="Company registered successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function registerCompany(Request $request)
     {
         // Validate the request
@@ -35,7 +68,44 @@ class AuthController extends Controller
         return response()->json(['company' => $company, 'message' => 'Company registered successfully'], 201);
     }
     
-
+/**
+ * @OA\Post(
+ *     path="/api/register-user",
+ *     tags={"Auth"},
+ *     summary="Register a new user",
+ *     description="Registers a user with details like name, email, password, phone, city, and role",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name", "email", "password", "phone", "city", "role_id"},
+ *             @OA\Property(property="name", type="string", example="John Doe"),
+ *             @OA\Property(property="email", type="string", example="johndoe@example.com"),
+ *             @OA\Property(property="password", type="string", example="password123"),
+ *             @OA\Property(property="phone", type="string", example="9876543210"),
+ *             @OA\Property(property="city", type="string", example="New York"),
+ *             @OA\Property(property="address", type="string", example="123 Main St"),
+ *             @OA\Property(property="pincode", type="string", example="10001"),
+ *             @OA\Property(property="company_id", type="integer", example=1),
+ *             @OA\Property(property="role_id", type="integer", example=2)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="User registered successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="user", type="object"),
+ *             @OA\Property(property="message", type="string", example="User registered successfully")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
     public function registerUser(Request $request)
     {
         // Validate the request
@@ -78,6 +148,37 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'message' => ucfirst($roleName) . ' registered successfully'], 201);
     }
     
+/**
+ * @OA\Post(
+ *     path="/api/login",
+ *     tags={"Auth"},
+ *     summary="User login",
+ *     description="Authenticates a user and returns an access token",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"email", "password"},
+ *             @OA\Property(property="email", type="string", example="johndoe@example.com"),
+ *             @OA\Property(property="password", type="string", example="password123")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Login successful",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="token", type="string", example="your_access_token_here"),
+ *             @OA\Property(property="user", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Invalid credentials",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Invalid credentials")
+ *         )
+ *     )
+ * )
+ */
 
     public function login(Request $request)
     {
@@ -103,12 +204,64 @@ class AuthController extends Controller
         return response()->json(['token' => $token, 'user' => $user], 200);
     }
 
+/**
+ * @OA\Post(
+ *     path="/api/logout",
+ *     tags={"Auth"},
+ *     summary="User logout",
+ *     description="Logs out the authenticated user by revoking their token",
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Logout successful",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Logged out successfully.")
+ *         )
+ *     )
+ * )
+ */
+
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
         return response()->json(['message' => 'Logged out successfully.'], 200);
     }
 
+/**
+ * @OA\Post(
+ *     path="/api/update-profile",
+ *     tags={"Auth"},
+ *     summary="Update user profile",
+ *     description="Updates the profile information of the authenticated user",
+ *     security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"name", "phone", "city"},
+ *             @OA\Property(property="name", type="string", example="John Doe Updated"),
+ *             @OA\Property(property="phone", type="string", example="1234567890"),
+ *             @OA\Property(property="city", type="string", example="New York"),
+ *             @OA\Property(property="address", type="string", example="Updated Address"),
+ *             @OA\Property(property="pincode", type="string", example="10002")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Profile updated successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Profile updated successfully"),
+ *             @OA\Property(property="user", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();  // Get the authenticated user
@@ -131,7 +284,43 @@ class AuthController extends Controller
     
         return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
     }
-    
+  
+/**
+ * @OA\Post(
+ *     path="/api/password-reset/request",
+ *     tags={"Auth"},
+ *     summary="Request password reset",
+ *     description="Sends a password reset link to the user's email",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"email"},
+ *             @OA\Property(property="email", type="string", example="johndoe@example.com")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Password reset link sent",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Password reset link sent to your email.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Unable to send password reset link",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unable to send password reset link.")
+ *         )
+ *     )
+ * )
+ */
     public function requestPasswordReset(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -151,6 +340,45 @@ class AuthController extends Controller
         }
     }
 
+/**
+ * @OA\Post(
+ *     path="/api/password-reset/reset",
+ *     tags={"Auth"},
+ *     summary="Reset password",
+ *     description="Resets the user's password using a reset token",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"email", "token", "password", "password_confirmation"},
+ *             @OA\Property(property="email", type="string", example="johndoe@example.com"),
+ *             @OA\Property(property="token", type="string", example="reset_token_here"),
+ *             @OA\Property(property="password", type="string", example="newpassword123"),
+ *             @OA\Property(property="password_confirmation", type="string", example="newpassword123")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Password reset successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Password reset successfully")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid token or email",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Invalid token or email")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
