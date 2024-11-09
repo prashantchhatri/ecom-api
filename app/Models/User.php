@@ -55,4 +55,14 @@ class User extends Authenticatable
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * The user's wishlist products.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function wishlist()
+    {
+        return $this->belongsToMany(Product::class, 'wishlists')->withTimestamps();
+    }
+
 }
